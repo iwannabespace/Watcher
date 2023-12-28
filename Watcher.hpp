@@ -36,6 +36,7 @@ namespace LogianApi
 				Action action;
 			};
 			using Callback = std::function<void(const FileChangeResult& result)>;
+			using DataPair   = std::pair<std::string, std::string>;
 		public:
 			Watcher();
 			~Watcher();
@@ -44,8 +45,9 @@ namespace LogianApi
 			void watch(Callback callback);
 		private:
 			std::optional<FileInfo> getFileInfo(const std::string& filepath) const;
-			std::pair<std::string, std::string> getChanges(const std::pair<std::string, std::string>& datas) const;
+			DataPair getChanges(const DataPair& datas) const;
 			std::string getFileContents(const std::string& filepath) const;
+			Action getAction(const DataPair& datas) const;
 		private:
 			std::vector<std::string> files;
 			std::unordered_map<std::string, FileInfo> infos;

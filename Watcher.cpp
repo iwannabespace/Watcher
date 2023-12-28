@@ -63,26 +63,13 @@ namespace LogianApi
 
 					if (oldInfo.last_mod != newInfo.last_mod) 
 					{
-						Action event;
-
 						newInfo.content = getFileContents(file);
 						infos[file] = newInfo;
 
-						auto change = getChanges({ oldInfo.content, newInfo.content });
-						
-						if (!change.first.empty() && !change.second.empty())
-							event = Action::Modify;
-						
-						else if (!change.first.empty())
-							event = Action::Add;
-						
-						else if (!change.second.empty())
-							event = Action::Remove;
-						
-						else
-							event = Action::None;
-
-						callback({ file, oldInfo.content, newInfo.content, change.first, change.second, event });
+						DataPair change = getChanges({ oldInfo.content, newInfo.content });
+						Action action = getAction(change);
+				
+						callback({ file, oldInfo.content, newInfo.content, change.first, change.second, action });
 					}
 				}
 
@@ -108,7 +95,7 @@ namespace LogianApi
 		return FileInfo { std::filesystem::last_write_time(filepath), "" };
 	}
 
-	std::pair<std::string, std::string> Watcher::getChanges(const std::pair<std::string, std::string>& datas) const
+	Watcher::DataPair Watcher::getChanges(const Watcher::DataPair& datas) const
 	{
 		const std::string& old = datas.first;
 		const std::string& cur = datas.second;
@@ -131,5 +118,19 @@ namespace LogianApi
 		buffer << file.rdbuf();
 
 		return buffer.str();
+	}
+
+	Watcher::Action Watcher::getAction(const DataPair& datas) const
+	{
+		if (!datas.first.empty() && !datas.second.empty())
+			return Action::Modify;
+
+		else if (!datas.first.empty()) 
+			return Action::Add;
+
+		else if (!datas.second.empty()) 
+			return Action::Remove;
+		
+		return Action::None;
 	}
 }
