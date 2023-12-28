@@ -29,12 +29,14 @@ watcher.watch([](const Watcher::FileChangeResult& result) {
             break;
         case Watcher::Action::Modify:
             break;
+        case Watcher::Action::None:
+            break;
     }
 });
 ```
 
 <h4>FileChangeResult struct:</h4>
-This class contains information about modified file.<br>
+This struct contains information about modified file.<br>
 
 ```cpp
 struct FileChangeResult 
