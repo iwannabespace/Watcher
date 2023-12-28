@@ -7,7 +7,5 @@ and let you know if any of the files are modified<br>
 <h4>Create an instance:</h4>
 
 ```cpp
-using namespace LogianApi
-
-Watcher watcher;
+LogianApi::Watcher watcher;
 ```
