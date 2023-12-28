@@ -7,6 +7,7 @@
 #include <functional>
 #include <utility>
 #include <filesystem>
+#include <optional>
 
 namespace LogianApi
 {
@@ -42,7 +43,7 @@ namespace LogianApi
 			bool remove(const std::string& filepath);
 			void watch(Callback callback);
 		private:
-			FileInfo getFileInfo(const std::string& filepath) const;
+			std::optional<FileInfo> getFileInfo(const std::string& filepath) const;
 			std::pair<std::string, std::string> getChanges(const std::pair<std::string, std::string>& datas) const;
 			std::string getFileContents(const std::string& filepath) const;
 		private:

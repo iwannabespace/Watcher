@@ -48,46 +48,64 @@ namespace LogianApi
 
 	void Watcher::watch(Callback callback)
 	{
-		while (true) 
+		while (files.size()) 
 		{
-			for (const std::string& file : files) 
+			for (size_t i = 0; i < files.size(); i++) 
 			{
-				FileInfo oldInfo = infos[file];
-				FileInfo newInfo = getFileInfo(file);
+				const std::string file = files[i];
+				const FileInfo oldInfo = infos[file];
 				
-				if (oldInfo.last_mod != newInfo.last_mod) 
+				auto newInfoOption = getFileInfo(file);
+
+				if (newInfoOption.has_value())
 				{
-					Action event;
+					FileInfo newInfo = newInfoOption.value();
 
-					newInfo.content = getFileContents(file);
-					infos[file] = newInfo;
+					if (oldInfo.last_mod != newInfo.last_mod) 
+					{
+						Action event;
 
-					auto change = getChanges({ oldInfo.content, newInfo.content });
-					
-					if (!change.first.empty() && !change.second.empty())
-						event = Action::Modify;
-					
-					else if (!change.first.empty())
-						event = Action::Add;
-					
-					else if (!change.second.empty())
-						event = Action::Remove;
-					
-					else
-						event = Action::None;
+						newInfo.content = getFileContents(file);
+						infos[file] = newInfo;
 
-					callback({ file, oldInfo.content, newInfo.content, change.first, change.second, event });
+						auto change = getChanges({ oldInfo.content, newInfo.content });
+						
+						if (!change.first.empty() && !change.second.empty())
+							event = Action::Modify;
+						
+						else if (!change.first.empty())
+							event = Action::Add;
+						
+						else if (!change.second.empty())
+							event = Action::Remove;
+						
+						else
+							event = Action::None;
+
+						callback({ file, oldInfo.content, newInfo.content, change.first, change.second, event });
+					}
+				}
+
+				else
+				{
+					files.erase(files.begin() + i);
+					infos.erase(file);
+					std::cout << "This file was removed because it's no more accessible -> " << file << std::endl;
 				}
 			}
 
 			std::this_thread::sleep_for(std::chrono::milliseconds(250));
 		}
+
+		std::cout << "Watcher stopped working because there is no file to watch for!" << std::endl;
 	}
 
-	Watcher::FileInfo Watcher::getFileInfo(const std::string& filepath) const
+	std::optional<Watcher::FileInfo> Watcher::getFileInfo(const std::string& filepath) const
 	{
-		std::filesystem::file_time_type last_mod = std::filesystem::last_write_time(filepath);
-		return { last_mod, "" };
+		if (!std::filesystem::exists(filepath))
+			return {};
+
+		return FileInfo { std::filesystem::last_write_time(filepath), "" };
 	}
 
 	std::pair<std::string, std::string> Watcher::getChanges(const std::pair<std::string, std::string>& datas) const
