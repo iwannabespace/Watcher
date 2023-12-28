@@ -21,7 +21,7 @@ watcher.add("another_important_file.json");
 
 ```cpp
 watcher.watch([](const Watcher::FileChangeResult& result) {
-    switch (result.action)
+    switch (result.action) // action is 'Modify' if result.added and result.removed are both filled
     {
         case Watcher::Action::Add:
             break;
@@ -29,8 +29,22 @@ watcher.watch([](const Watcher::FileChangeResult& result) {
             break;
         case Watcher::Action::Modify:
             break;
-        default:
-            break;
     }
 });
 ```
+
+<h4>FileChangeResult struct:</h4>
+This class contains information about modified file.<br>
+
+```cpp
+struct FileChangeResult 
+{
+    std::string filename; // name of the modified file
+    std::string previousValue; // pre-modification contents of file
+    std::string currentValue; // post-modification contents of file
+    std::string added; // what was added to the file
+    std::string removed; // what was removed from the file
+    Action action; // action that was done { Add, Remove, Modify }
+};
+```
+
