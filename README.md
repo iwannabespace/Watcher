@@ -16,3 +16,7 @@ LogianApi::Watcher watcher;
 watcher.add("important_file.txt");
 watcher.add("another_important_file.json");
 ```
+
+```js
+const fs = require('fs');
+```
