@@ -29,7 +29,7 @@ watcher.watch([](const Watcher::FileChangeResult& result) {
             break;
         case Watcher::Action::Modify:
             break;
-        case Watcher::Action::None:
+        case Watcher::Action::None: // this implies that file was modified but it's contents remain the same
             break;
     }
 });
@@ -46,7 +46,7 @@ struct FileChangeResult
     std::string currentValue; // post-modification contents of file
     std::string added; // what was added to the file
     std::string removed; // what was removed from the file
-    Action action; // action that was done { Add, Remove, Modify }
+    Action action; // action that was done { Add, Remove, Modify, None }
 };
 ```
 
