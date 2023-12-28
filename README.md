@@ -9,3 +9,10 @@ and let you know if any of the files are modified<br>
 ```cpp
 LogianApi::Watcher watcher;
 ```
+
+<h4>Add the files:</h4>
+
+```cpp
+watcher.add("important_file.txt");
+watcher.add("another_important_file.json");
+```
