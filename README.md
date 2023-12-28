@@ -4,7 +4,8 @@ It simply keeps track of the files that are given to the class<br>
 and let you know if any of the files are modified<br>
 
 # Example
-<h3>Create an instance:</h3>
+<h4>Create an instance:</h4>
+
 ```cpp
 using namespace LogianApi
 
