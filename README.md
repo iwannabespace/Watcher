@@ -17,6 +17,20 @@ watcher.add("important_file.txt");
 watcher.add("another_important_file.json");
 ```
 
-```js
-const fs = require('fs');
+<h4>Watch the files:</h4>
+
+```cpp
+watcher.watch([](const Watcher::FileChangeResult& result) {
+    switch (result.action)
+    {
+        case Watcher::Action::Add:
+            break;
+        case Watcher::Action::Remove:
+            break;
+        case Watcher::Action::Modify:
+            break;
+        default:
+            break;
+    }
+});
 ```
