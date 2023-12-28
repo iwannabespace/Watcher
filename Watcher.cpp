@@ -21,16 +21,8 @@ namespace LogianApi
 		{
 			files.push_back(filepath);
 
-			std::filesystem::file_time_type last_mod;
-			std::string content;
-			
-			std::ifstream file(filepath);
-			std::stringstream buffer;
-			buffer << file.rdbuf();
-			file.close();
-
-			last_mod = std::filesystem::last_write_time(filepath);
-			content = buffer.str();
+			std::filesystem::file_time_type last_mod = std::filesystem::last_write_time(filepath);;
+			std::string content = getFileContents(filepath);
 			
 			infos[filepath].last_mod = last_mod;
 			infos[filepath].content = content;
@@ -65,13 +57,9 @@ namespace LogianApi
 				
 				if (oldInfo.last_mod != newInfo.last_mod) 
 				{
-					std::ifstream f(file);
-					std::stringstream buffer;
-					std::string difference;
 					Action event;
 
-					buffer << f.rdbuf();
-					newInfo.content = buffer.str();
+					newInfo.content = getFileContents(file);
 					infos[file] = newInfo;
 
 					auto change = getChanges({ oldInfo.content, newInfo.content });
@@ -82,8 +70,11 @@ namespace LogianApi
 					else if (!change.first.empty())
 						event = Action::Add;
 					
-					else
+					else if (!change.second.empty())
 						event = Action::Remove;
+					
+					else
+						event = Action::None;
 
 					callback({ file, oldInfo.content, newInfo.content, change.first, change.second, event });
 				}
@@ -112,5 +103,15 @@ namespace LogianApi
 		std::string added = cur.substr(cur.find(until) + until.length());
 
 		return { added, removed };
+	}
+
+	std::string Watcher::getFileContents(const std::string& filepath) const
+	{
+		std::ifstream file(filepath);
+		std::stringstream buffer;
+
+		buffer << file.rdbuf();
+
+		return buffer.str();
 	}
 }
