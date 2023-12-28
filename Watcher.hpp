@@ -6,6 +6,7 @@
 #include <unordered_map>
 #include <functional>
 #include <utility>
+#include <filesystem>
 
 namespace LogianApi
 {
@@ -17,6 +18,7 @@ namespace LogianApi
 				Add,
 				Remove,
 				Modify,
+				None,
 			};
 			struct FileInfo 
 			{
@@ -42,6 +44,7 @@ namespace LogianApi
 		private:
 			FileInfo getFileInfo(const std::string& filepath) const;
 			std::pair<std::string, std::string> getChanges(const std::pair<std::string, std::string>& datas) const;
+			std::string getFileContents(const std::string& filepath) const;
 		private:
 			std::vector<std::string> files;
 			std::unordered_map<std::string, FileInfo> infos;
